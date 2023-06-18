@@ -1,5 +1,4 @@
-
-import memory
+import memory as memory
 from array import array
 
 firmware = array('L', [0]) * 512
@@ -69,8 +68,7 @@ firmware[16] = 0b00000000_000_00110101_001000_000_001
 ## 272: goto 13
 firmware[272]= 0b00001101_000_00000000_000000_000_000
 
-
-MPC = 0
+MPC = 0               
 MIR = 0
 
 MAR = 0
@@ -183,11 +181,11 @@ def alu(control_bits):
         Z = 0
         
     if shift_bits == 0b01:
-        o = o << 1
+        o = o << 1 # MULT POR 2
     elif shift_bits == 0b10:
-        o = o >> 1
+        o = o >> 1 # DIVI POR 2
     elif shift_bits == 0b11:
-        o = o << 8
+        o = o << 8 # MULT POR 256
         
     BUS_C = o
  
@@ -242,10 +240,3 @@ def step():
                       (MIR & 0b00000000011100000000000000000000) >> 20)
                       
     return True
-
-
-
-
-
-
-
