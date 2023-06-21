@@ -68,6 +68,48 @@ firmware[16] = 0b00000000_000_00110101_001000_000_001
 ## 272: goto 13
 firmware[272]= 0b00001101_000_00000000_000000_000_000
 
+
+# X <- X // memory[address]
+
+## 29: PC <- PC + 1; MBR <- read_byte(PC); GOTO 30
+firmware[29] = 0b000011110_000_00110101_001000_001_001
+## 30: MAR <- MBR; read_word; GOTO 31
+firmware[30] = 0b000011111_000_00010100_100000_010_010
+## 31: H <- MDR; GOTO 32
+firmware[31] = 0b000100000_000_00010100_000001_000_000
+## 32: Y <- X; GOTO 33
+firmware[32] = 0b000100001_000_00010100_000010_000_011
+## 33: X <- 0; GOTO 34
+firmware[33] = 0b000100010_000_00010000_000100_000_000
+## 34: Y <- Y - H; if Y - H < 0 GOTO 35 + 256; else GOTO 35
+firmware[34] = 0b000100011_010_00111111_000010_000_100
+
+### 35: Y é maior ou igual a 0
+## X <- X + 1; GOTO 34
+firmware[35] =  0b000100010_000_00110101_000100_000_011
+### [291] Y é menor que 0
+firmware[291] = 0b000000000_100_00110101_001000_001_001
+
+# RESTO DA DIVISÃO
+# memory[address] <- H + Y
+## 36: PC <- PC + 1; fetch; GOTO 37
+firmware[36] = 0b000100101_000_00110101_001000_001_001
+## 37: MAR <- MBR; goto 38
+firmware[37] = 0b000100110_000_00010100_100000_000_010
+
+## 38: MDR <- H + Y; write; goto 0
+firmware[38] = 0b000000000_000_00111100_010000_100_100
+
+
+
+
+# mais rápida 2.0
+## 40: PC <- PC + 1; fetch; GOTO 41
+## 41: MAR <- MBR; read_word; GOTO 42
+## 42: H <- MDR; GOTO 43
+## 43: Y <- X; GOTO 44
+## 44: X <- Y & ONE
+
 MPC = 0               
 MIR = 0
 
@@ -78,6 +120,7 @@ MBR = 0
 X = 0
 Y = 0
 H = 0
+ONE = 1
 
 N = 0
 Z = 1
@@ -87,7 +130,7 @@ BUS_B = 0
 BUS_C = 0
 
 def read_regs(reg_num):
-    global MDR, PC, MBR, X, Y, H, BUS_A, BUS_B
+    global MDR, PC, MBR, X, Y, H, BUS_A, BUS_B, ONE
     
     BUS_A = H
     
@@ -101,6 +144,8 @@ def read_regs(reg_num):
         BUS_B = X
     elif reg_num == 4:
         BUS_B = Y
+    elif reg_num == 5:
+        BUS_B = ONE
     else:
         BUS_B = 0
             
@@ -110,7 +155,7 @@ def write_regs(reg_bits):
 
     if reg_bits & 0b100000:
         MAR = BUS_C
-        
+         
     if reg_bits & 0b010000:
         MDR = BUS_C
         
@@ -174,11 +219,15 @@ def alu(control_bits):
         o = -1 
         
     if o == 0:
-        N = 0
         Z = 1
     else:
-        N = 1
         Z = 0
+
+    if o < 0:
+        N = 1
+    else:
+        N = 0
+
         
     if shift_bits == 0b01:
         o = o << 1 # MULT POR 2
