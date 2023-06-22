@@ -70,7 +70,12 @@ firmware[272]= 0b00001101_000_00000000_000000_000_000
 
 
 # X <- X // memory[address]
-
+## 26: PC <- PC + 1, fetch; GOTO 27
+firmware[26] = 0b000011011_000_00110101_001000_001_001
+## 27: MAR <- MBR; read_word; GOTO 28
+firmware[27] = 0b000011100_000_00010100_100000_010_010
+## 28: X <- MDR; GOTO 29
+firmware[28] = 0b000011101_000_00010100_000100_000_000
 ## 29: PC <- PC + 1; MBR <- read_byte(PC); GOTO 30
 firmware[29] = 0b000011110_000_00110101_001000_001_001
 ## 30: MAR <- MBR; read_word; GOTO 31
@@ -91,22 +96,36 @@ firmware[35] =  0b000100010_000_00110101_000100_000_011
 firmware[291] = 0b000000000_100_00110101_001000_001_001
 
 
+# RESTO DA DIVISÃO
+# memory[address] <- H + Y
+## 36: PC <- PC + 1; fetch; GOTO 37
+firmware[36] = 0b000100101_000_00110101_001000_001_001
+## 37: MAR <- MBR; goto 38
+firmware[37] = 0b000100110_000_00010100_100000_000_010
+
+## 38: MDR <- H + Y; write; goto 0
+firmware[38] = 0b000000000_000_00111100_010000_100_100
 
 
 # X <- X!
-
+## 44: PC <- PC + 1, fetch; GOTO 45
+firmware[44] = 0b000101101_000_00110101_001000_001_001
+## 45: MAR <- MBR; read_word; GOTO 46
+firmware[45] = 0b000101110_000_00010100_100000_010_010
+## 46: X <- MDR; GOTO 47
+firmware[46] = 0b000101111_000_00010100_000100_000_000
 ## 47: if X == 0 GOTO 48 + 256; else GOTO 48
 firmware[47] = 0b000110000_001_00010100_000100_000_011
 ## 304: X <- 1; GOTO 0
 firmware[304]= 0b000000000_000_00110101_000100_000_011 
 ## MDR <- X; GOTO 49
-firmware[48] = 0b00011000100000010100010000000011
+firmware[48] = 0b000110001_000_00010100010000000011
 ## H <- X; GOTO 50
 firmware[49] = 0b00011001000000010100000001000011
 ## MDR <- MDR - 1; GOTO 51
 firmware[50] = 0b00011001100000110110010000000000
 ## if MDR == 0; GOTO 52 + 256; else GOTO 52
-firmware[51] = 0b00011010000100010100000000000000
+firmware[51] = 0b000110100_00100010100000000000000
 ### [308] MDR é igual a 0
 firmware[308] = 0b00000000010000110101001000001001
 ### [52] MDR é diferente de 0
@@ -128,17 +147,13 @@ firmware[56] = 0b00011011000000111100000100000011
 
 
 
-# RESTO DA DIVISÃO
-# memory[address] <- H + Y
-## 36: PC <- PC + 1; fetch; GOTO 37
-firmware[36] = 0b000100101_000_00110101_001000_001_001
-## 37: MAR <- MBR; goto 38
-firmware[37] = 0b000100110_000_00010100_100000_000_010
-
-## 38: MDR <- H + Y; write; goto 0
-firmware[38] = 0b000000000_000_00111100_010000_100_100
 
 
+
+# X <- X**Y
+## 50: PC <- PC + 1; fetch; GOTO 51
+## 51: MAR <- MBR; read_word; GOTO 52
+## 52: H <- MDR; GOTO 53
 
 
 # mais rápida 2.0
@@ -158,7 +173,6 @@ MBR = 0
 X = 0
 Y = 0
 H = 0
-ONE = 1
 
 N = 0
 Z = 1
@@ -168,7 +182,7 @@ BUS_B = 0
 BUS_C = 0
 
 def read_regs(reg_num):
-    global MDR, PC, MBR, X, Y, H, BUS_A, BUS_B, ONE
+    global MDR, PC, MBR, X, Y, H, BUS_A, BUS_B
     
     BUS_A = H
     
@@ -182,8 +196,6 @@ def read_regs(reg_num):
         BUS_B = X
     elif reg_num == 4:
         BUS_B = Y
-    elif reg_num == 5:
-        BUS_B = ONE
     else:
         BUS_B = 0
             

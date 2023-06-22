@@ -6,16 +6,16 @@ lines = []
 lines_bin = []
 names = []
 
-instructions = ['add', 'sub', 'goto', 'mov', 'jz', 'halt', 'div', 'mod', 'fat', 'wb', 'ww']
+instructions = ['add', 'sub', 'goto', 'mov', 'jz', 'halt', 'div', 'mod', 'mem', 'fat', 'wb', 'ww']
 instruction_set = {'add' : 0x02, 
                    'sub' : 0x06, 
                    'mov' : 0x0A, 
                    'goto': 0x0D,
                    'jz'  : 0x0F, 
                    'halt': 0xFF,
-                   'div' : 0x1D,
+                   'div' : 0x1A,
                    'mod' : 0x24,
-                   'fat' : 0x2F}
+                   'fat' : 0x2C}
 
 def is_instruction(str):
    global instructions
@@ -40,8 +40,11 @@ def encode_2ops(inst, ops):
    if len(ops) > 1:
       if ops[0] == 'x':
          if is_name(ops[1]):
-            line_bin.append(instruction_set[inst])
-            line_bin.append(ops[1])
+            if inst == "mem":
+               line_bin.append(ops[1])
+            else:
+               line_bin.append(instruction_set[inst])
+               line_bin.append(ops[1])
    return line_bin
 
 def encode_goto(ops):
@@ -78,7 +81,7 @@ def encode_ww(ops):
    return line_bin
       
 def encode_instruction(inst, ops):
-   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'div' or inst == 'mod' or inst == 'fat':
+   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'div' or inst == 'mod' or inst == 'fat' or inst == 'mem':
       return encode_2ops(inst, ops)
    elif inst == 'goto':
       return encode_goto(ops)
@@ -161,6 +164,7 @@ if lines_to_bin_step1():
    resolve_names()
    byte_arr = [0]
    for line in lines_bin:
+      print(line)
       for byte in line:
          byte_arr.append(byte)
    fdst = open(str(sys.argv[2]), 'wb')

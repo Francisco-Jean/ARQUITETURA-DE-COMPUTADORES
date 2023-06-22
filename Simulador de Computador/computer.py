@@ -2,36 +2,41 @@ import ufc2x as cpu
 import memory as mem
 import clock as clk
 
-mem.write_word(100, 10)
+# FATORIAL
+# # X <- X!
+
+# mem.write_word(50, 38)
+
+# mem.write_byte(1, 44)
+# mem.write_byte(2, 50)
+
+# mem.write_byte(3, 10)
+# mem.write_byte(4, 100)
+
+# mem.write_byte(5, 255)
+
+
+# DIVISÃO
+# X <- X // memory[address]
+
 mem.write_word(50, 1)
+mem.write_word(51, 0)
 
-mem.write_byte(1, 2)
+mem.write_byte(1, 26)
 mem.write_byte(2, 50)
+mem.write_byte(3, 51)
 
-mem.write_byte(3, 47)
 mem.write_byte(4, 10)
 mem.write_byte(5, 100)
 
-mem.write_byte(6, 255)
+mem.write_byte(6, 36)
+mem.write_byte(7, 101)
 
-## X <- X // memory[address]
-# mem.write_byte(1, 2)
-# mem.write_byte(2, 100)
-
-# mem.write_byte(3, 29)
-# mem.write_byte(4, 50)
+mem.write_byte(8, 255)
 
 
-# mem.write_byte(5, 10)
-# mem.write_byte(6, 120)
-# mem.write_byte(7, 36)
-# mem.write_byte(8, 121)
-
-# mem.write_byte(9, 255)
 
 clk.start([cpu])
 
 print(mem.read_word(100))
-
-if mem.read_word(101) != 0:
-    print(mem.read_word(101))
+print(mem.read_word(101))

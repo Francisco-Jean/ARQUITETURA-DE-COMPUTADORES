@@ -3,6 +3,7 @@ ticks = 0
 def start(devs, auto = True):
    global ticks
    while True:
+      
       if not auto:
          input()
       success = True

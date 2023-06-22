@@ -6,11 +6,12 @@ import disk as disk
 
 disk.read(str(sys.argv[1]))
 
+
 print("\n")
 clk.start([cpu])
 
 print("Resultado:", mem.read_word(3))
 
-print("Caso esteja rodando a divisão, o resto é: ", mem.read_word(4))
+print("Caso esteja rodando a divisão, o resto é: ", mem.read_word(1))
 
 print("\n")
