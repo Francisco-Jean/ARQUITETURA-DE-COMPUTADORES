@@ -4,12 +4,11 @@ import memory as mem
 import clock as clk
 import disk as disk
 
-print("Antes: ", mem.read_word(1))
-
 disk.read(str(sys.argv[1]))
 
 clk.start([cpu])
 
-print("Depois: ", mem.read_word(3))
-print("Depois: ", mem.read_word(4))
+print("Resultado:", mem.read_word(3))
+
+print("Resto:", mem.read_word(4))
 
