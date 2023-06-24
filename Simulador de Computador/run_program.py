@@ -13,5 +13,7 @@ clk.start([cpu])
 print("Resultado:", mem.read_word(1))
 if mem.read_word(2) == cpu.MDR:
     print("Resto: ", mem.read_word(2))
+if mem.read_word(2) == mem.read_word(3):
+    print("Resultado: " )
 
 print("")
