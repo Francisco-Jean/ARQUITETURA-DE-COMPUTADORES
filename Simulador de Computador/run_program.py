@@ -7,11 +7,11 @@ import disk as disk
 disk.read(str(sys.argv[1]))
 
 
-print("\n")
+print("")
 clk.start([cpu])
 
-print("Resultado:", mem.read_word(3))
+print("Resultado:", mem.read_word(1))
+if mem.read_word(2) == cpu.MDR:
+    print("Resto: ", mem.read_word(2))
 
-print("Caso esteja rodando a divisão, o resto é: ", mem.read_word(1))
-
-print("\n")
+print("")

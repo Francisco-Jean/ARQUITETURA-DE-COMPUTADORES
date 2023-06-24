@@ -15,7 +15,8 @@ instruction_set = {'add' : 0x02,
                    'halt': 0xFF,
                    'div' : 0x1A,
                    'mod' : 0x24,
-                   'fat' : 0x2C}
+                   'fat' : 0x2C,
+                   'mem' : 0x08}
 
 def is_instruction(str):
    global instructions
@@ -40,11 +41,8 @@ def encode_2ops(inst, ops):
    if len(ops) > 1:
       if ops[0] == 'x':
          if is_name(ops[1]):
-            if inst == "mem":
-               line_bin.append(ops[1])
-            else:
-               line_bin.append(instruction_set[inst])
-               line_bin.append(ops[1])
+            line_bin.append(instruction_set[inst])
+            line_bin.append(ops[1])
    return line_bin
 
 def encode_goto(ops):
@@ -143,7 +141,7 @@ def resolve_names():
    for line in lines_bin:
       for i in range(0, len(line)):
          if is_name(line[i]):
-            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['fat']:
+            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['fat']or line[i-1] == instruction_set['mem']:
                line[i] = get_name_byte(line[i])//4
             else:
                line[i] = get_name_byte(line[i])
@@ -164,11 +162,13 @@ if lines_to_bin_step1():
    resolve_names()
    byte_arr = [0]
    for line in lines_bin:
-      print(line)
+      if line[0] == 8:
+         line.pop(0)
       for byte in line:
          byte_arr.append(byte)
    fdst = open(str(sys.argv[2]), 'wb')
    fdst.write(bytearray(byte_arr))
    fdst.close()
+   print("Tradução realizada com sucesso.")
 
 fsrc.close()

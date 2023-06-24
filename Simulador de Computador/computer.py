@@ -19,8 +19,8 @@ import clock as clk
 # DIVISÃO
 # X <- X // memory[address]
 
-mem.write_word(50, 1)
-mem.write_word(51, 0)
+mem.write_word(50, 20)
+mem.write_word(51, 10)
 
 mem.write_byte(1, 26)
 mem.write_byte(2, 50)
