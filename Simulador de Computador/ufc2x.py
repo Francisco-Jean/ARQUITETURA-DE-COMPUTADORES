@@ -148,20 +148,33 @@ firmware[56] = 0b00011011000000111100000100000011
 
 
 
+# CSW (a, b, c):
+# 60: PC <- PC + 1; fetch; GOTO 61
+# 61: MAR <- MBR; read_word; GOTO 62
+# 62: H <- MDR (a); GOTO 63
+
+# 63: PC <- PC + 1; fetch; GOTO 64
+# 64: MAR <- MBR; read_word; GOTO 65
+# 65: Y <- MDR (c); GOTO 66
+# 67: IF Y - H == 0 GOTO 68 + 256; ELSE GOTO 68
 
 
-# X <- X**Y
-## 50: PC <- PC + 1; fetch; GOTO 51
-## 51: MAR <- MBR; read_word; GOTO 52
-## 52: H <- MDR; GOTO 53
+# 68: PC <- PC + 1; fetch; GOTO 69
+# 69: MDR <- 1; GOTO 70
+# 70: MAR <- MBR; write; GOTO 0
+# 71: X <- Y; GOTO 0
+
+# 324: PC <- PC + 1; fetch; GOTO 69
+# 325: MDR <- 0; GOTO 70
+# 326: MAR <- MBR; write; GOTO 0
+# 327: X <- Y; GOTO 0
 
 
-# mais rápida 2.0
-## 40: PC <- PC + 1; fetch; GOTO 41
-## 41: MAR <- MBR; read_word; GOTO 42
-## 42: H <- MDR; GOTO 43
-## 43: Y <- X; GOTO 44
-## 44: X <- Y & ONE
+
+
+
+
+
 
 MPC = 0               
 MIR = 0
