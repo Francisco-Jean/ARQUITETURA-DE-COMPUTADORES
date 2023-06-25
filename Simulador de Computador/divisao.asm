@@ -1,13 +1,13 @@
 goto main
 wb 0
 
-a ww 1
-b ww 1
+a ww 2
+b ww 10
 c ww 0
 d ww 0
 
 main div x, a
      mem x, b
-     mov x, a
+     mov x, d
      mod x, b
      halt
