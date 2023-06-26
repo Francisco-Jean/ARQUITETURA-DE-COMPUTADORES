@@ -1,7 +1,7 @@
 goto main
 wb 0
 
-a ww 2
+a ww 20
 b ww 10
 c ww 0
 d ww 0

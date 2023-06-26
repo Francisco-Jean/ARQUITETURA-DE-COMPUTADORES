@@ -142,10 +142,15 @@ def resolve_names():
    for line in lines_bin:
       for i in range(0, len(line)):
          if is_name(line[i]):
-            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['fat'] or line[i-1] == instruction_set['mem'] or line[i-1] == instruction_set['set']:
+            print(f"line 0 {line}")
+            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['fat'] or line[i-1] == instruction_set['set'] or line[i-1] == instruction_set['mem']:
                line[i] = get_name_byte(line[i])//4
             else:
                line[i] = get_name_byte(line[i])
+      if line[0] == instruction_set['mem'] and len(line) < 3:
+         print(f"aqui {line}")
+         line.pop(0)
+         print(f"depois {line}")
 
 for line in fsrc:
    tokens = line.replace('\n','').replace(',','').lower().split(" ")
@@ -163,8 +168,7 @@ if lines_to_bin_step1():
    resolve_names()
    byte_arr = [0]
    for line in lines_bin:
-      if line[0] == 8:
-         line.pop(0)
+      print(line)
       for byte in line:
          byte_arr.append(byte)
    fdst = open(str(sys.argv[2]), 'wb')

@@ -1,9 +1,11 @@
     goto main
     wb 0
 
-a ww 1
-b ww 10
-c ww 12
+a ww 8
+b ww 8
+c ww 8
+
+
 d ww 1
 e ww 0
 
