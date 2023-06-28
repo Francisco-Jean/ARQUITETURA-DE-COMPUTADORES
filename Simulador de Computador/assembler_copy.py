@@ -7,17 +7,17 @@ lines_bin = []
 names = []
 
 instructions = ['add', 'sub', 'goto', 'mov', 'jz', 'halt', 'div', 'mod', 'mem', 'fat', 'set', 'wb', 'ww']
-instruction_set = {'add' : 0x02, 
-                   'sub' : 0x06, 
-                   'mov' : 0x0A, 
+instruction_set = {'add' : {'x' : 0x02, 'y' : 0x0E},
+                   'sub' : {'x' : 0x06, 'y' : 0x0E},
+                   'mov' : {'x' : 0x0A, 'y' : 0x0E},
                    'goto': 0x0D,
-                   'jz'  : 0x0F, 
+                   'jz'  : {'x' : 0x0F, 'y' : 0x0E},
                    'halt': 0xFF,
-                   'div' : 0x1A,
-                   'mod' : 0x24,
-                   'fat' : 0x2C,
-                   'mem' : 0x08,
-                   'set' : 0x3C}
+                   'div' : {'x' : 0x1A, 'y' : 0x0E},
+                   'mod' : {'x' : 0x24, 'y' : 0x0E},
+                   'fat' : {'x' : 0x2C, 'y' : 0x0E},
+                   'mem' : {'x' : 0x08, 'y' : 0x0E},
+                   'set' : {'x' : 0x3C, 'y' : 0x0E}}
 
 def is_instruction(str):
    global instructions
