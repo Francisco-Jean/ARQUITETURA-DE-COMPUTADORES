@@ -143,7 +143,7 @@ def resolve_names():
       for i in range(0, len(line)):
          if is_name(line[i]):
             print(f"line 0 {line}")
-            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['fat'] or line[i-1] == instruction_set['set'] or line[i-1] == instruction_set['mem']:
+            if line[i-1] == instruction_set['add']['x'] or line[i-1] == instruction_set['add']['y'] or line[i-1] == instruction_set['sub']['x'] or line[i-1] == instruction_set['sub']['y'] or line[i-1] == instruction_set['mov']['x'] or line[i-1] == instruction_set['mov']['y'] or line[i-1] == instruction_set['div']['x'] or line[i-1] == instruction_set['div']['y'] or line[i-1] == instruction_set['mod']['x'] or line[i-1] == instruction_set['mod']['y'] or line[i-1] == instruction_set['fat']['x'] or line[i-1] == instruction_set['fat']['y'] or line[i-1] == instruction_set['set']['x'] or line[i-1] == instruction_set['set']['y'] or line[i-1] == instruction_set['mem']['x'] or line[i-1] == instruction_set['mem']['y']:
                line[i] = get_name_byte(line[i])//4
             else:
                line[i] = get_name_byte(line[i])
