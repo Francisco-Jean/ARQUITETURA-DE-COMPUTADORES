@@ -40,7 +40,7 @@ def is_name(str):
 def encode_2ops(inst, ops):
    line_bin = []
    if len(ops) > 1:
-      if ops[0] == 'x':
+      if ops[0] == 'x' or ops[0] == 'y':
          if is_name(ops[1]):
             line_bin.append(instruction_set[inst])
             line_bin.append(ops[1])
