@@ -9,7 +9,7 @@ c ww 8
 d ww 1
 e ww 0
 
-main add x, a
+main set x, a
      sub x, c
      jz x, equal
      set x, c

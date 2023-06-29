@@ -10,8 +10,9 @@ print("")
 clk.start([cpu])
 
 print("Resultado:", mem.read_word(4))
-if mem.read_word(2) == cpu.MDR:
-    print("Resto:", mem.read_word(2))
+
+if mem.read_word(5) == cpu.MDR:
+    print("Resto:", mem.read_word(5))
 
 if mem.read_word(2) == mem.read_word(3) and mem.read_word(4) == 0:
     print("Valor do A :", mem.read_word(1))

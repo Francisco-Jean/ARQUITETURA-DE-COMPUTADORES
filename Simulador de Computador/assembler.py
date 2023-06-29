@@ -6,18 +6,19 @@ lines = []
 lines_bin = []
 names = []
 
-instructions = ['add', 'sub', 'goto', 'mov', 'jz', 'halt', 'div', 'mod', 'mem', 'fat', 'set', 'wb', 'ww']
-instruction_set = {'add' : 0x02, 
-                   'sub' : 0x06, 
-                   'mov' : 0x0A, 
+instructions = ['add', 'sub', 'goto', 'mov', 'jz', 'halt', 'div', 'mod', 'mem', 'subone', 'mul', 'fat', 'set', 'wb', 'ww']
+instruction_set = {'add' : 0x02,
+                   'sub' : 0x06,
+                   'mov' : 0x0A,
                    'goto': 0x0D,
-                   'jz'  : 0x0F, 
+                   'jz'  : 0x0F,
                    'halt': 0xFF,
                    'div' : 0x1A,
                    'mod' : 0x24,
-                   'fat' : 0x2C,
                    'mem' : 0x08,
-                   'set' : 0x3C}
+                   'set' : 0x28,
+                   'subone' : 0x46,
+                   'mul' : 0x3D}
 
 def is_instruction(str):
    global instructions
@@ -43,6 +44,10 @@ def encode_2ops(inst, ops):
       if ops[0] == 'x':
          if is_name(ops[1]):
             line_bin.append(instruction_set[inst])
+            line_bin.append(ops[1])
+      elif ops[0] == 'y':
+         if is_name(ops[1]):
+            line_bin.append(instruction_set[inst] + 0x40)
             line_bin.append(ops[1])
    return line_bin
 
@@ -78,9 +83,24 @@ def encode_ww(ops):
             line_bin.append((val & 0xFF0000) >> 16)
             line_bin.append((val & 0xFF000000) >> 24)
    return line_bin
-      
+
+def encode_so(ops):
+   line_bin = []
+   if ops[0] == 'x':
+      line_bin.append(instruction_set['subone'] + 0x01)
+   elif ops[0] == 'y':
+      line_bin.append(instruction_set['subone'])
+   return line_bin
+
+def encode_mul(ops):
+   line_bin = []
+   if ops == '_':
+      line_bin.append(instruction_set['mul'])
+   return line_bin
+
+
 def encode_instruction(inst, ops):
-   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'div' or inst == 'mod' or inst == 'fat' or inst == 'mem' or inst == 'set':
+   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'div' or inst == 'mod' or inst == 'mem' or inst == 'set':
       return encode_2ops(inst, ops)
    elif inst == 'goto':
       return encode_goto(ops)
@@ -90,6 +110,10 @@ def encode_instruction(inst, ops):
       return encode_wb(ops)
    elif inst == 'ww':
       return encode_ww(ops)
+   elif inst == 'subone':
+      return encode_so(ops)
+   elif inst == 'mul' and ops == '_':
+      return encode_mul(ops)
    else:
       return []
    
@@ -97,7 +121,11 @@ def encode_instruction(inst, ops):
 def line_to_bin_step1(line):
    line_bin = []
    if is_instruction(line[0]):
-      line_bin = encode_instruction(line[0], line[1:])
+      if line[0] == 'mul':
+         line_bin = encode_instruction(line[0], '_')
+      else:
+         line_bin = encode_instruction(line[0], line[1:])
+      
    else:
       line_bin = encode_instruction(line[1], line[2:])
    return line_bin
@@ -142,15 +170,12 @@ def resolve_names():
    for line in lines_bin:
       for i in range(0, len(line)):
          if is_name(line[i]):
-            print(f"line 0 {line}")
-            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['fat'] or line[i-1] == instruction_set['set'] or line[i-1] == instruction_set['mem']:
+            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['set'] or line[i-1] == instruction_set['mem'] or line[i-1] == instruction_set['set'] + 0x40:
                line[i] = get_name_byte(line[i])//4
             else:
                line[i] = get_name_byte(line[i])
       if line[0] == instruction_set['mem'] and len(line) < 3:
-         print(f"aqui {line}")
          line.pop(0)
-         print(f"depois {line}")
 
 for line in fsrc:
    tokens = line.replace('\n','').replace(',','').lower().split(" ")
@@ -168,7 +193,6 @@ if lines_to_bin_step1():
    resolve_names()
    byte_arr = [0]
    for line in lines_bin:
-      print(line)
       for byte in line:
          byte_arr.append(byte)
    fdst = open(str(sys.argv[2]), 'wb')

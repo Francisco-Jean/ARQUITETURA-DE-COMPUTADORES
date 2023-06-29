@@ -57,7 +57,6 @@ firmware[13] = 0b00001110_000_00110101_001000_001_001
 ## 14: PC <- MBR; fetch; goto MBR
 firmware[14] = 0b00000000_100_00010100_001000_001_010
 
-
 # if X == 0 goto address
 
 ## 15: X <- X; if alu = 0 goto 272 else goto 16
@@ -108,65 +107,75 @@ firmware[37] = 0b000100110_000_00010100_100000_000_010
 firmware[38] = 0b000000000_000_00111100_010000_100_100
 
 
+# X <- X!
+## 44: PC <- PC + 1, fetch; GOTO 45
+firmware[44] = 0b000101101_000_00110101_001000_001_001
+## 45: MAR <- MBR; read_word; GOTO 46
+firmware[45] = 0b000101110_000_00010100_100000_010_010
+## 46: X <- MDR; GOTO 47
+firmware[46] = 0b000101111_000_00010100_000100_000_000
+## 47: if X == 0 GOTO 48 + 256; else GOTO 48
+firmware[47] = 0b000110000_001_00010100_000100_000_011
+## 304: X <- 1; GOTO 0
+firmware[304]= 0b000000000_000_00110101_000100_000_011 
+## MDR <- X; GOTO 49
+firmware[48] = 0b000110001_000_00010100010000000011
+## H <- X; GOTO 50
+firmware[49] = 0b00011001000000010100000001000011
+## MDR <- MDR - 1; GOTO 51
+firmware[50] = 0b00011001100000110110010000000000
+## if MDR == 0; GOTO 52 + 256; else GOTO 52
+firmware[51] = 0b000110100_00100010100000000000000
+### [308] MDR é igual a 0
+firmware[308] = 0b00000000010000110101001000001001
+### [52] MDR é diferente de 0
+## Y <- MDR; GOTO 53
+firmware[52] = 0b00011010100000010100000010000000
+### [53] inicia a multiplicação
+## X <- 0; GOTO 54
+firmware[53] = 0b00011011000000010000000100000000
+## if Y == 0; GOTO 55 + 256; else GOTO 55
+firmware[54] = 0b00011011100100010100000000000100
+### [311] Y é igual a 0, portanto, GOTO 50 e H <- X
+## H <- X; GOTO 50
+firmware[311] = 0b00011001000000010100000001000011
+### [55] Y é diferente de 0 
+## Y <- Y - 1; GOTO 56
+firmware[55] = 0b00011100000000110110000010000100
+## X <- X + H; GOTO 54
+firmware[56] = 0b00011011000000111100000100000011
+
 # X = memory[address]
 
-## 40: PC <- PC + 1; fetch; goto 41
-firmware[40] = 0b000101001_000_00110101_001000_001_001
+## 60: PC <- PC + 1; fetch; goto 61
+firmware[60] = 0b000111101_000_00110101_001000_001_001
 
-## 41: MAR <- MBR; read_word(MAR); goto 42
-firmware[41] = 0b000101010_000_00010100_100000_010_010
+## 61: MAR <- MBR; read_word(MAR); goto 62
+firmware[61] = 0b000111110_000_00010100_100000_010_010
 
-## 42: X <- MDR; goto 0
-firmware[42] = 0b000000000_000_00010100_000100_000_000
+## 62: X <- MDR; goto 0
+firmware[62] = 0b000000000_000_00010100_000100_000_000
 
+# CSW (a, b, c):
+# 60: PC <- PC + 1; fetch; GOTO 61
+# 61: MAR <- MBR; read_word; GOTO 62
+# 62: H <- MDR (a); GOTO 63
 
-# X = X * Y
-
-## 61: H <- X; GOTO 62
-firmware[61] = 0b000111110_000_00010100_000001_000_011
-## 62: MDR <- Y - 1; GOTO 63
-firmware[62] = 0b000111111_000_00110110_010000_000_100
-## 63: if MDR = 0 GOTO 64 + 256; else GOTO 64
-firmware[63] = 0b001000000_001_00010100_000000_000_000
-## 64: X = X + H; GOTO 65
-firmware[64] = 0b001000001_000_00111100_000100_000_011
-## 65: MDR <- MDR - 1; if MDR == 0 GOTO 64 + 256;  else GOTO 64
-firmware[65] = 0b001000000_001_00110110_010000_000_000
-## 320: MDR = 0; GOTO 0
-firmware[320] = 0b000000000_000_00000000_000000_000_110
+# 63: PC <- PC + 1; fetch; GOTO 64
+# 64: MAR <- MBR; read_word; GOTO 65
+# 65: Y <- MDR (c); GOTO 66
+# 67: IF Y - H == 0 GOTO 68 + 256; ELSE GOTO 68
 
 
-## 70: Y <- Y - 1; GOTO 00
-firmware[70] = 0b000000000_000_00110110_000010_000_100
+# 68: PC <- PC + 1; fetch; GOTO 69
+# 69: MDR <- 1; GOTO 70
+# 70: MAR <- MBR; write; GOTO 0
+# 71: X <- Y; GOTO 0
 
-
-# 71: X <- X - 1; GOTO 0
-firmware[71] = 0b000000000_000_00110110_000010_000_100
-
-
-# if Y == 0 goto address
-
-## 79: Y <- Y; if alu = 0 goto 336 else goto 80
-firmware[79] = 0b001010000_001_00010100_000010_000_100
-
-## 80: PC <- PC + 1; goto 0
-firmware[80] = 0b000000000_000_00110101_001000_000_001
-
-## 336: goto 13
-firmware[336]= 0b000001101_000_00000000_000000_000_000
-
-
-# Y = memory[address]
-
-## 40: PC <- PC + 1; fetch; goto 105
-firmware[104] = 0b001101001_000_00110101_001000_001_001
-
-## 41: MAR <- MBR; read_word(MAR); goto 106
-firmware[105] = 0b001101010_000_00010100_100000_010_010
-
-## 42: Y <- MDR; goto 0
-firmware[106] = 0b000000000_000_00010100_000010_000_000
-
+# 324: PC <- PC + 1; fetch; GOTO 69
+# 325: MDR <- 0; GOTO 70
+# 326: MAR <- MBR; write; GOTO 0
+# 327: X <- Y; GOTO 0
 
 
 
