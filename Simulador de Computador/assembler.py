@@ -98,9 +98,19 @@ def encode_mul(ops):
       line_bin.append(instruction_set['mul'])
    return line_bin
 
+def encode_div(ops):
+   line_bin = []
+   if len(ops) > 2:
+      if is_name(ops[1]) and is_name(ops[2]):
+         line_bin.append(instruction_set['div'])
+         line_bin.append(ops[1])
+         line_bin.append(ops[2])
+   return line_bin
+
+
 
 def encode_instruction(inst, ops):
-   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'div' or inst == 'mod' or inst == 'mem' or inst == 'set':
+   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'mod' or inst == 'mem' or inst == 'set':
       return encode_2ops(inst, ops)
    elif inst == 'goto':
       return encode_goto(ops)
@@ -114,6 +124,8 @@ def encode_instruction(inst, ops):
       return encode_so(ops)
    elif inst == 'mul' and ops == '_':
       return encode_mul(ops)
+   elif inst == 'div':
+      return encode_div(ops)
    else:
       return []
    
@@ -170,7 +182,7 @@ def resolve_names():
    for line in lines_bin:
       for i in range(0, len(line)):
          if is_name(line[i]):
-            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['set'] or line[i-1] == instruction_set['mem'] or line[i-1] == instruction_set['set'] + 0x40:
+            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['div'] or line[i-1] == instruction_set['mod'] or line[i-1] == instruction_set['set'] or line[i-1] == instruction_set['mem'] or line[i-1] == instruction_set['set'] + 0x40 or line[i-2] == instruction_set['div']:
                line[i] = get_name_byte(line[i])//4
             else:
                line[i] = get_name_byte(line[i])

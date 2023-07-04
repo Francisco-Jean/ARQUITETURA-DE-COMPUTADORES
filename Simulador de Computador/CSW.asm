@@ -2,10 +2,8 @@
     wb 0
 
 a ww 8
-b ww 8
-c ww 8
-
-
+b ww 10
+c ww 7
 d ww 1
 e ww 0
 

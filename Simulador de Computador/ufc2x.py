@@ -70,31 +70,35 @@ firmware[16] = 0b00000000_000_00110101_001000_000_001
 firmware[272]= 0b00001101_000_00000000_000000_000_000
 
 
-# X <- X // memory[address]
+# X <- Y // memory[address]
 ## 26: PC <- PC + 1, fetch; GOTO 27
 firmware[26] = 0b000011011_000_00110101_001000_001_001
 ## 27: MAR <- MBR; read_word; GOTO 28
 firmware[27] = 0b000011100_000_00010100_100000_010_010
-## 28: X <- MDR; GOTO 29
-firmware[28] = 0b000011101_000_00010100_000100_000_000
+## 28: Y <- MDR; GOTO 29
+firmware[28] = 0b000011101_000_00010100_000010_000_000
 ## 29: PC <- PC + 1; MBR <- read_byte(PC); GOTO 30
 firmware[29] = 0b000011110_000_00110101_001000_001_001
 ## 30: MAR <- MBR; read_word; GOTO 31
 firmware[30] = 0b000011111_000_00010100_100000_010_010
-## 31: H <- MDR; GOTO 32
-firmware[31] = 0b000100000_000_00010100_000001_000_000
-## 32: Y <- X; GOTO 33
-firmware[32] = 0b000100001_000_00010100_000010_000_011
-## 33: X <- 0; GOTO 34
-firmware[33] = 0b000100010_000_00010000_000100_000_000
-## 34: Y <- Y - H; if Y - H < 0 GOTO 35 + 256; else GOTO 35
-firmware[34] = 0b000100011_010_00111111_000010_000_100
+## 31: H <- MDR; GOTO 33
+firmware[31] = 0b000100001_000_00010100_000001_000_000
 
+# --------------------- EXCLUIDO -------------------- #
+# ## 32: Y <- X; GOTO 33
+# firmware[32] = 0b000100001_000_00010100_000010_000_011
+
+# ## 33: X <- 0; GOTO 33
+# firmware[32] = 0b000100001_000_00010000_000100_000_000
+# --------------------- EXCLUIDO -------------------- #
+
+## 34: Y <- Y - H; if Y - H < 0 GOTO 34 + 256; else GOTO 34
+firmware[33] = 0b000100010_010_00111111_000010_000_100
 ### 35: Y é maior ou igual a 0
-## X <- X + 1; GOTO 34
-firmware[35] =  0b000100010_000_00110101_000100_000_011
+## X <- X + 1; GOTO 33
+firmware[34] =  0b000100001_000_00110101_000100_000_011
 ### [291] Y é menor que 0
-firmware[291] = 0b000000000_100_00110101_001000_001_001
+firmware[290] = 0b000000000_100_00110101_001000_001_001
 
 
 # RESTO DA DIVISÃO
@@ -168,8 +172,6 @@ firmware[105] = 0b001101010_000_00010100_100000_010_010
 firmware[106] = 0b000000000_000_00010100_000010_000_000
 
 
-
-
 MPC = 0               
 MIR = 0
 
@@ -181,7 +183,7 @@ X = 0
 Y = 0
 H = 0
 
-N = 0
+NBJ = 0
 Z = 1
 
 BUS_A = 0
@@ -231,7 +233,7 @@ def write_regs(reg_bits):
             
 def alu(control_bits):
 
-    global BUS_A, BUS_B, BUS_C, N, Z
+    global BUS_A, BUS_B, BUS_C, NBJ, Z
     
     a = BUS_A 
     b = BUS_B
@@ -281,9 +283,9 @@ def alu(control_bits):
         Z = 0
 
     if o < 0:
-        N = 1
+        NBJ = 1
     else:
-        N = 0
+        NBJ = 0
 
         
     if shift_bits == 0b01:
@@ -298,7 +300,7 @@ def alu(control_bits):
 
 def next_instruction(next, jam):
 
-    global MPC, MBR, N, Z
+    global MPC, MBR, NBJ, Z
     
     if jam == 0b000:
         MPC = next
@@ -307,8 +309,8 @@ def next_instruction(next, jam):
     if jam & 0b001:                 # JAMZ
         next = next | (Z << 8)
         
-    if jam & 0b010:                 # JAMN
-        next = next | (N << 8)
+    if jam & 0b010:                 # JAMNBJ
+        next = next | (NBJ << 8)
 
     if jam & 0b100:                 # JMPC
         next = next | MBR

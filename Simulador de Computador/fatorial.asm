@@ -1,10 +1,8 @@
     goto main
     wb 0
 
-a ww 12
-b ww 0
-c ww 0
-d ww 1
+a ww 5
+b ww 1
 
 main set x, a
      jz x, zero
@@ -18,5 +16,5 @@ fato jz y, resu
 
 zero halt
 
-resu mov x, d
+resu mov x, b
      halt
