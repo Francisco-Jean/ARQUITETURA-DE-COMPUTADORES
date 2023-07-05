@@ -15,7 +15,6 @@ instruction_set = {'add' : 0x02,
                    'halt': 0xFF,
                    'div' : 0x1A,
                    'mod' : 0x24,
-                   'mem' : 0x08,
                    'set' : 0x28,
                    'subone' : 0x46,
                    'mul' : 0x3D}
